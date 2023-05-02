@@ -4,12 +4,12 @@ from astar import *
 
 ox, oy = [], []
 path_all = []
-path1 = [(7, 4), (6, 4), (5, 4), (5, 3)]
-path2 = [(4, 4), (5, 4), (6, 4), (7, 4)]
+path1 = [(10, 4), (9, 4), (8, 4), (7, 4), (6, 4), (5, 4), (5, 3)]
+path2 = [(1, 2), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (8, 4)]
 
 
 class path:
-    def __init__():
+    def __init__(self):
         path.time = []
         path.type = None
         path.line = None
@@ -130,6 +130,7 @@ goal_pts.append(path_all[0][-1])
 goal_pts.append(path_all[1][-1])
 
 vis = 1
+image_path = 'robot.png'
 if vis:
     for i in range(len(path_all[0])):
         plt.cla()
@@ -139,7 +140,7 @@ if vis:
             draw_endpoint(goal, 'grey')
 
         for path_n in path_all:
-            draw_bot(path_n[i][0], path_n[i][1])
+            draw_bot(path_n[i][0], path_n[i][1], image_path, 0.05)
             pathx = []
             pathy = []
             for point in path_n:
@@ -149,6 +150,5 @@ if vis:
         plt.axis('equal')
         plt.xlim([2, 10])
         plt.ylim([0, 5])
-
         plt.show(block=False)
         plt.pause(1)

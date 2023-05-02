@@ -38,13 +38,6 @@ def create_map(maxx, maxy):
         ox.append(maxx-1)
         oy.append(i)
 
-    # create shelves in an inventory
-    # top lines of obstacles will have 4 vertical shelves/ obstacles
-    # VT1 - top left
-    # VT1 = (40,100)
-    # Sh_w = 20
-    # Sh_h = 50
-
     VT1 = (7, 14)
     Sh_w = 3
     Sh_h = 8
