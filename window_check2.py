@@ -123,7 +123,7 @@ def reroute_window2(prev_path_list, path2, start_index, end_index, ox, oy):
             path[start_index:end_index], start_index, end_index)
         for key in time_keys_for_path:
             time_keys.append(key)
-    window_size = 8
+    window_size = 2
     # print(f'length of path2 = {len(path2)}')
     # print(f'\npath1 = ', path1,'\n')
     for i in range(start_index, end_index):
@@ -159,6 +159,7 @@ def reroute_window2(prev_path_list, path2, start_index, end_index, ox, oy):
 
 
 def main():
+    starttime = time.time()
     # original start and goals for demonstrating windowed heirarchial A-star algorithm
     # start_pts = [(5,5), (21,20), (2,20)]
     # goal_pts = [(7,8), (2,2), (20,5)]
@@ -169,29 +170,51 @@ def main():
     start_pts = [(5, 25), (19, 25), (35, 25), (10, 23)]
     goal_pts = [(35, 39), (38, 35), (8, 35), (22, 37)]
 
+    start_pts = [(5, 25), (19, 25), (35, 25), (10, 23), (28, 23), (40, 26)]
+    goal_pts = [(35, 39), (38, 35), (8, 35), (22, 37), (15, 31), (18, 40)]
+
     ox, oy = [], []
     path_list = []
     ox, oy = make_obs(ox, oy)
+    goal_times = []
+    for i in range(len(start_pts)):
+        # calculate shortest path
+        path = astar(start_pts[i], goal_pts[i], ox, oy)
+        timed_keys = time_a_star(path)
+        # create a path lists for plotting
+        path_list.append(path)
+        path_all = plot_path_update(path_list)
+
     path1 = astar(start_pts[0], goal_pts[0], ox, oy)
     path2 = astar(start_pts[1], goal_pts[1], ox, oy)
     path3 = astar(start_pts[2], goal_pts[2], ox, oy)
     path4 = astar(start_pts[3], goal_pts[3], ox, oy)
-    window_size = 8
+    path5 = astar(start_pts[4], goal_pts[4], ox, oy)
+    path6 = astar(start_pts[5], goal_pts[5], ox, oy)
+
+    window_size = 2
 
     path_list = []
     path_list.append(path1)
     path_list.append(path2)
     path_list.append(path3)
     path_list.append(path4)
+    path_list.append(path5)
+    path_list.append(path6)
     path_all = plot_path_update(path_list)
     path1 = path_all[0]
     path2 = path_all[1]
     path3 = path_all[2]
     path4 = path_all[3]
+    path5 = path_all[4]
+    path6 = path_all[5]
+
     path1 = make_8_step_path(path1, window_size)
     path2 = make_8_step_path(path2, window_size)
     path3 = make_8_step_path(path3, window_size)
     path4 = make_8_step_path(path4, window_size)
+    path5 = make_8_step_path(path5, window_size)
+    path6 = make_8_step_path(path6, window_size)
 
     m = len(path1)//window_size
     # print("m = ", m)
@@ -220,8 +243,10 @@ def main():
         path3 = make_8_step_path(path3, window_size)
         path4 = make_8_step_path(path4, window_size)
 
-        # path2 = make_8_step_path(path2, window_size)
-    print('done finding path 2')
+    m = len(path2)//window_size
+    # print("m = ", m)
+    # print(f'path1 = {len(path1)} \npath2 = {len(path2)} \npath3 = {len(path3)}')
+
     prev_path_list.append(path2)
     for i in range(m):
         p = (i-1)*window_size + window_size
@@ -233,20 +258,18 @@ def main():
         path_list.append(path1)
         path_list.append(path2)
         path_list.append(path3)
-        path_list.append(path4)
         path_all = plot_path_update(path_list)
         path1 = path_all[0]
         path2 = path_all[1]
         path3 = path_all[2]
-        path4 = path_all[3]
         path1 = make_8_step_path(path1, window_size)
         path2 = make_8_step_path(path2, window_size)
         path3 = make_8_step_path(path3, window_size)
-        path4 = make_8_step_path(path4, window_size)
 
     print('done finding path 3')
 
     prev_path_list.append(path3)
+    m = len(path2)//window_size
     for i in range(m):
         p = (i-1)*window_size + window_size
         q = i*window_size + window_size
@@ -268,13 +291,69 @@ def main():
         path3 = make_8_step_path(path3, window_size)
         path4 = make_8_step_path(path4, window_size)
 
-    print('done finding path 4')
+    prev_path_list.append(path4)
+    m = len(path2)//window_size
+    for i in range(m):
+        p = (i-1)*window_size + window_size
+        q = i*window_size + window_size
+        # print('start index = ', p, ', end index = ', q)
+        # path2 = reroute_window(path1[p:q], path2, p, q, ox, oy)
+        path5 = reroute_window2(prev_path_list, path5, p, q, ox, oy)
+        path_list = []
+        path_list.append(path1)
+        path_list.append(path2)
+        path_list.append(path3)
+        path_list.append(path4)
+        path_list.append(path5)
+        path_all = plot_path_update(path_list)
+        path1 = path_all[0]
+        path2 = path_all[1]
+        path3 = path_all[2]
+        path4 = path_all[3]
+        path5 = path_all[4]
+
+        path1 = make_8_step_path(path1, window_size)
+        path2 = make_8_step_path(path2, window_size)
+        path3 = make_8_step_path(path3, window_size)
+        path4 = make_8_step_path(path4, window_size)
+        path5 = make_8_step_path(path5, window_size)
+
+    prev_path_list.append(path5)
+    m = len(path2)//window_size
+    for i in range(m):
+        p = (i-1)*window_size + window_size
+        q = i*window_size + window_size
+        # print('start index = ', p, ', end index = ', q)
+        # path2 = reroute_window(path1[p:q], path2, p, q, ox, oy)
+        path6 = reroute_window2(prev_path_list, path6, p, q, ox, oy)
+        path_list = []
+        path_list.append(path1)
+        path_list.append(path2)
+        path_list.append(path3)
+        path_list.append(path4)
+        path_list.append(path5)
+        path_list.append(path6)
+        path_all = plot_path_update(path_list)
+        path1 = path_all[0]
+        path2 = path_all[1]
+        path3 = path_all[2]
+        path4 = path_all[3]
+        path5 = path_all[4]
+        path6 = path_all[5]
+        path1 = make_8_step_path(path1, window_size)
+        path2 = make_8_step_path(path2, window_size)
+        path3 = make_8_step_path(path3, window_size)
+        path4 = make_8_step_path(path4, window_size)
+        path5 = make_8_step_path(path5, window_size)
+        path6 = make_8_step_path(path6, window_size)
 
     path_list = []
     path_list.append(path1)
     path_list.append(path2)
     path_list.append(path3)
     path_list.append(path4)
+    path_list.append(path5)
+    path_list.append(path6)
     path_all = plot_path_update(path_list)
 
     # --------------------------------------- start of plotting -----------------------------------------------
@@ -282,12 +361,11 @@ def main():
     if vis:
         for i in range(len(path_all[0])):
             plt.cla()
-            # plt.plot(ox, oy, 'sk')
             show_loading_dock()
             draw_shelves()
             for start, goal in zip(start_pts, goal_pts):
                 draw_endpoint(start, 'orange')
-                draw_endpoint(goal, 'black')
+                draw_endpoint(goal, 'grey')
 
             for path_n in path_all:
                 draw_bot(path_n[i][0], path_n[i][1], "robot.png")
@@ -300,13 +378,15 @@ def main():
                 f'Robots pick objects from top shelf, time = {i}')
             # plt.show(block=False)
             plt.pause(0.2)
+    # plt.pause(0.5)
     # plt.show()
 
+    # -------------------------------------------------------------------------------------####1-------------------------------------------------------------------------------------------------
     # new run for going to taking collected items from shelves to loading dock
     print("-------------------------\\-------------------")
-    print("bringing items bacl to the loading dock")
-    goal_pts = [(5, 25), (19, 25), (35, 25), (10, 23)]
-    start_pts = [(35, 39), (38, 35), (8, 35), (22, 37)]
+    print("bringing items back to the loading dock")
+    goal_pts = [(5, 25), (19, 25), (35, 25), (10, 23), (28, 23), (40, 26)]
+    start_pts = [(35, 39), (38, 35), (8, 35), (22, 37), (15, 31), (18, 40)]
 
     ox, oy = [], []
     path_list = []
@@ -325,22 +405,32 @@ def main():
     path2 = astar(start_pts[1], goal_pts[1], ox, oy)
     path3 = astar(start_pts[2], goal_pts[2], ox, oy)
     path4 = astar(start_pts[3], goal_pts[3], ox, oy)
-    window_size = 8
+    path5 = astar(start_pts[4], goal_pts[4], ox, oy)
+    path6 = astar(start_pts[5], goal_pts[5], ox, oy)
+
+    # window_size = 16
 
     path_list = []
     path_list.append(path1)
     path_list.append(path2)
     path_list.append(path3)
     path_list.append(path4)
+    path_list.append(path5)
+    path_list.append(path6)
     path_all = plot_path_update(path_list)
     path1 = path_all[0]
     path2 = path_all[1]
     path3 = path_all[2]
     path4 = path_all[3]
+    path5 = path_all[4]
+    path6 = path_all[5]
+
     path1 = make_8_step_path(path1, window_size)
     path2 = make_8_step_path(path2, window_size)
     path3 = make_8_step_path(path3, window_size)
     path4 = make_8_step_path(path4, window_size)
+    path5 = make_8_step_path(path5, window_size)
+    path6 = make_8_step_path(path6, window_size)
 
     m = len(path1)//window_size
     # print("m = ", m)
@@ -395,6 +485,7 @@ def main():
     print('done finding path 3')
 
     prev_path_list.append(path3)
+    m = len(path2)//window_size
     for i in range(m):
         p = (i-1)*window_size + window_size
         q = i*window_size + window_size
@@ -416,11 +507,69 @@ def main():
         path3 = make_8_step_path(path3, window_size)
         path4 = make_8_step_path(path4, window_size)
 
+    prev_path_list.append(path4)
+    m = len(path2)//window_size
+    for i in range(m):
+        p = (i-1)*window_size + window_size
+        q = i*window_size + window_size
+        # print('start index = ', p, ', end index = ', q)
+        # path2 = reroute_window(path1[p:q], path2, p, q, ox, oy)
+        path5 = reroute_window2(prev_path_list, path5, p, q, ox, oy)
+        path_list = []
+        path_list.append(path1)
+        path_list.append(path2)
+        path_list.append(path3)
+        path_list.append(path4)
+        path_list.append(path5)
+        path_all = plot_path_update(path_list)
+        path1 = path_all[0]
+        path2 = path_all[1]
+        path3 = path_all[2]
+        path4 = path_all[3]
+        path5 = path_all[4]
+
+        path1 = make_8_step_path(path1, window_size)
+        path2 = make_8_step_path(path2, window_size)
+        path3 = make_8_step_path(path3, window_size)
+        path4 = make_8_step_path(path4, window_size)
+        path5 = make_8_step_path(path5, window_size)
+
+    prev_path_list.append(path5)
+    m = len(path2)//window_size
+    for i in range(m):
+        p = (i-1)*window_size + window_size
+        q = i*window_size + window_size
+        # print('start index = ', p, ', end index = ', q)
+        # path2 = reroute_window(path1[p:q], path2, p, q, ox, oy)
+        path6 = reroute_window2(prev_path_list, path6, p, q, ox, oy)
+        path_list = []
+        path_list.append(path1)
+        path_list.append(path2)
+        path_list.append(path3)
+        path_list.append(path4)
+        path_list.append(path5)
+        path_list.append(path6)
+        path_all = plot_path_update(path_list)
+        path1 = path_all[0]
+        path2 = path_all[1]
+        path3 = path_all[2]
+        path4 = path_all[3]
+        path5 = path_all[4]
+        path6 = path_all[5]
+        path1 = make_8_step_path(path1, window_size)
+        path2 = make_8_step_path(path2, window_size)
+        path3 = make_8_step_path(path3, window_size)
+        path4 = make_8_step_path(path4, window_size)
+        path5 = make_8_step_path(path5, window_size)
+        path6 = make_8_step_path(path6, window_size)
+
     path_list = []
     path_list.append(path1)
     path_list.append(path2)
     path_list.append(path3)
     path_list.append(path4)
+    path_list.append(path5)
+    path_list.append(path6)
     path_all = plot_path_update(path_list)
 
     # --------------------------------------- start of plotting -----------------------------------------------
@@ -433,7 +582,7 @@ def main():
             draw_shelves()
             for start, goal in zip(start_pts, goal_pts):
                 draw_endpoint(start, 'orange')
-                draw_endpoint(goal, 'black')
+                draw_endpoint(goal, 'grey')
 
             for path_n in path_all:
                 draw_bot(path_n[i][0], path_n[i][1], "robot.png")
@@ -446,12 +595,17 @@ def main():
                 f'Robots deliver objects to loading dock, time = {i}')
             # plt.show(block=False)
             plt.pause(0.2)
+    # plt.pause(0.5)
 
+    # -------------------------------------------------------------------------------------####2-------------------------------------------------------------------------------------------------
     # new run for going from loading dock to collect items from bottom shelf
     print("-------------------------\\-------------------")
     print("second run - from the loading dock to the bottom shelf")
-    start_pts = [(5, 25), (19, 25), (35, 25), (10, 23)]
-    goal_pts = [(35, 11), (38, 14), (8, 15), (22, 13)]
+    start_pts = [(5, 25), (19, 25), (35, 25), (10, 23), (28, 23), (40, 26)]
+    goal_pts = [(35, 11), (38, 14), (8, 15), (22, 13), (18, 10), (15, 9)]
+
+    # goal_pts = [(5, 25), (19, 25), (35, 25), (10,23), (28,23), (40, 26)]
+    # start_pts = [(35, 39), (38, 35), (8, 35), (22,37), (15,31), (18,40)]
 
     ox, oy = [], []
     path_list = []
@@ -470,24 +624,36 @@ def main():
     path2 = astar(start_pts[1], goal_pts[1], ox, oy)
     path3 = astar(start_pts[2], goal_pts[2], ox, oy)
     path4 = astar(start_pts[3], goal_pts[3], ox, oy)
-    window_size = 8
+    path5 = astar(start_pts[4], goal_pts[4], ox, oy)
+    path6 = astar(start_pts[5], goal_pts[5], ox, oy)
+
+    # window_size = 16
 
     path_list = []
     path_list.append(path1)
     path_list.append(path2)
     path_list.append(path3)
     path_list.append(path4)
+    path_list.append(path5)
+    path_list.append(path6)
     path_all = plot_path_update(path_list)
     path1 = path_all[0]
     path2 = path_all[1]
     path3 = path_all[2]
     path4 = path_all[3]
+    path5 = path_all[4]
+    path6 = path_all[5]
+
     path1 = make_8_step_path(path1, window_size)
     path2 = make_8_step_path(path2, window_size)
     path3 = make_8_step_path(path3, window_size)
     path4 = make_8_step_path(path4, window_size)
+    path5 = make_8_step_path(path5, window_size)
+    path6 = make_8_step_path(path6, window_size)
 
     m = len(path1)//window_size
+    # print("m = ", m)
+    # print(f'path1 = {len(path1)} \npath2 = {len(path2)} \npath3 = {len(path3)}')
 
     prev_path_list = []
     prev_path_list.append(path1)
@@ -513,6 +679,8 @@ def main():
         path4 = make_8_step_path(path4, window_size)
 
     m = len(path2)//window_size
+    # print("m = ", m)
+    # print(f'path1 = {len(path1)} \npath2 = {len(path2)} \npath3 = {len(path3)}')
 
     prev_path_list.append(path2)
     for i in range(m):
@@ -533,7 +701,10 @@ def main():
         path2 = make_8_step_path(path2, window_size)
         path3 = make_8_step_path(path3, window_size)
 
+    print('done finding path 3')
+
     prev_path_list.append(path3)
+    m = len(path2)//window_size
     for i in range(m):
         p = (i-1)*window_size + window_size
         q = i*window_size + window_size
@@ -555,15 +726,73 @@ def main():
         path3 = make_8_step_path(path3, window_size)
         path4 = make_8_step_path(path4, window_size)
 
+    prev_path_list.append(path4)
+    m = len(path2)//window_size
+    for i in range(m):
+        p = (i-1)*window_size + window_size
+        q = i*window_size + window_size
+        # print('start index = ', p, ', end index = ', q)
+        # path2 = reroute_window(path1[p:q], path2, p, q, ox, oy)
+        path5 = reroute_window2(prev_path_list, path5, p, q, ox, oy)
+        path_list = []
+        path_list.append(path1)
+        path_list.append(path2)
+        path_list.append(path3)
+        path_list.append(path4)
+        path_list.append(path5)
+        path_all = plot_path_update(path_list)
+        path1 = path_all[0]
+        path2 = path_all[1]
+        path3 = path_all[2]
+        path4 = path_all[3]
+        path5 = path_all[4]
+
+        path1 = make_8_step_path(path1, window_size)
+        path2 = make_8_step_path(path2, window_size)
+        path3 = make_8_step_path(path3, window_size)
+        path4 = make_8_step_path(path4, window_size)
+        path5 = make_8_step_path(path5, window_size)
+
+    prev_path_list.append(path5)
+    m = len(path2)//window_size
+    for i in range(m):
+        p = (i-1)*window_size + window_size
+        q = i*window_size + window_size
+        # print('start index = ', p, ', end index = ', q)
+        # path2 = reroute_window(path1[p:q], path2, p, q, ox, oy)
+        path6 = reroute_window2(prev_path_list, path6, p, q, ox, oy)
+        path_list = []
+        path_list.append(path1)
+        path_list.append(path2)
+        path_list.append(path3)
+        path_list.append(path4)
+        path_list.append(path5)
+        path_list.append(path6)
+        path_all = plot_path_update(path_list)
+        path1 = path_all[0]
+        path2 = path_all[1]
+        path3 = path_all[2]
+        path4 = path_all[3]
+        path5 = path_all[4]
+        path6 = path_all[5]
+        path1 = make_8_step_path(path1, window_size)
+        path2 = make_8_step_path(path2, window_size)
+        path3 = make_8_step_path(path3, window_size)
+        path4 = make_8_step_path(path4, window_size)
+        path5 = make_8_step_path(path5, window_size)
+        path6 = make_8_step_path(path6, window_size)
+
     path_list = []
     path_list.append(path1)
     path_list.append(path2)
     path_list.append(path3)
     path_list.append(path4)
+    path_list.append(path5)
+    path_list.append(path6)
     path_all = plot_path_update(path_list)
 
     # --------------------------------------- start of plotting -----------------------------------------------
-    vis = 0
+    vis = 1
     if vis:
         for i in range(len(path_all[0])):
             plt.cla()
@@ -572,7 +801,7 @@ def main():
             draw_shelves()
             for start, goal in zip(start_pts, goal_pts):
                 draw_endpoint(start, 'orange')
-                draw_endpoint(goal, 'black')
+                draw_endpoint(goal, 'grey')
 
             for path_n in path_all:
                 draw_bot(path_n[i][0], path_n[i][1], "robot.png")
@@ -585,12 +814,16 @@ def main():
                 f'Robots pick objects from bottom shelf, time = {i}')
             # plt.show(block=False)
             plt.pause(0.2)
+    # plt.pause(0.5)
 
     # new run for going from loading dock to collect items from bottom shelf
     print("-------------------------\\-------------------")
     print("second run - from the loading dock to the bottom shelf")
     goal_pts = [(5, 25), (19, 25), (35, 25), (10, 23)]
     start_pts = [(35, 11), (38, 14), (8, 16), (22, 12)]
+
+    goal_pts = [(5, 25), (19, 25), (35, 25), (10, 23), (28, 23), (40, 24)]
+    start_pts = [(35, 11), (38, 14), (8, 13), (22, 13), (18, 12), (15, 9)]
 
     ox, oy = [], []
     path_list = []
@@ -609,24 +842,36 @@ def main():
     path2 = astar(start_pts[1], goal_pts[1], ox, oy)
     path3 = astar(start_pts[2], goal_pts[2], ox, oy)
     path4 = astar(start_pts[3], goal_pts[3], ox, oy)
-    window_size = 8
+    path5 = astar(start_pts[4], goal_pts[4], ox, oy)
+    path6 = astar(start_pts[5], goal_pts[5], ox, oy)
+
+    # window_size = 16
 
     path_list = []
     path_list.append(path1)
     path_list.append(path2)
     path_list.append(path3)
     path_list.append(path4)
+    path_list.append(path5)
+    path_list.append(path6)
     path_all = plot_path_update(path_list)
     path1 = path_all[0]
     path2 = path_all[1]
     path3 = path_all[2]
     path4 = path_all[3]
+    path5 = path_all[4]
+    path6 = path_all[5]
+
     path1 = make_8_step_path(path1, window_size)
     path2 = make_8_step_path(path2, window_size)
     path3 = make_8_step_path(path3, window_size)
     path4 = make_8_step_path(path4, window_size)
+    path5 = make_8_step_path(path5, window_size)
+    path6 = make_8_step_path(path6, window_size)
 
     m = len(path1)//window_size
+    # print("m = ", m)
+    # print(f'path1 = {len(path1)} \npath2 = {len(path2)} \npath3 = {len(path3)}')
 
     prev_path_list = []
     prev_path_list.append(path1)
@@ -652,6 +897,8 @@ def main():
         path4 = make_8_step_path(path4, window_size)
 
     m = len(path2)//window_size
+    # print("m = ", m)
+    # print(f'path1 = {len(path1)} \npath2 = {len(path2)} \npath3 = {len(path3)}')
 
     prev_path_list.append(path2)
     for i in range(m):
@@ -672,7 +919,10 @@ def main():
         path2 = make_8_step_path(path2, window_size)
         path3 = make_8_step_path(path3, window_size)
 
+    print('done finding path 3')
+
     prev_path_list.append(path3)
+    m = len(path2)//window_size
     for i in range(m):
         p = (i-1)*window_size + window_size
         q = i*window_size + window_size
@@ -694,15 +944,73 @@ def main():
         path3 = make_8_step_path(path3, window_size)
         path4 = make_8_step_path(path4, window_size)
 
+    prev_path_list.append(path4)
+    m = len(path2)//window_size
+    for i in range(m):
+        p = (i-1)*window_size + window_size
+        q = i*window_size + window_size
+        # print('start index = ', p, ', end index = ', q)
+        # path2 = reroute_window(path1[p:q], path2, p, q, ox, oy)
+        path5 = reroute_window2(prev_path_list, path5, p, q, ox, oy)
+        path_list = []
+        path_list.append(path1)
+        path_list.append(path2)
+        path_list.append(path3)
+        path_list.append(path4)
+        path_list.append(path5)
+        path_all = plot_path_update(path_list)
+        path1 = path_all[0]
+        path2 = path_all[1]
+        path3 = path_all[2]
+        path4 = path_all[3]
+        path5 = path_all[4]
+
+        path1 = make_8_step_path(path1, window_size)
+        path2 = make_8_step_path(path2, window_size)
+        path3 = make_8_step_path(path3, window_size)
+        path4 = make_8_step_path(path4, window_size)
+        path5 = make_8_step_path(path5, window_size)
+
+    prev_path_list.append(path5)
+    m = len(path2)//window_size
+    for i in range(m):
+        p = (i-1)*window_size + window_size
+        q = i*window_size + window_size
+        # print('start index = ', p, ', end index = ', q)
+        # path2 = reroute_window(path1[p:q], path2, p, q, ox, oy)
+        path6 = reroute_window2(prev_path_list, path6, p, q, ox, oy)
+        path_list = []
+        path_list.append(path1)
+        path_list.append(path2)
+        path_list.append(path3)
+        path_list.append(path4)
+        path_list.append(path5)
+        path_list.append(path6)
+        path_all = plot_path_update(path_list)
+        path1 = path_all[0]
+        path2 = path_all[1]
+        path3 = path_all[2]
+        path4 = path_all[3]
+        path5 = path_all[4]
+        path6 = path_all[5]
+        path1 = make_8_step_path(path1, window_size)
+        path2 = make_8_step_path(path2, window_size)
+        path3 = make_8_step_path(path3, window_size)
+        path4 = make_8_step_path(path4, window_size)
+        path5 = make_8_step_path(path5, window_size)
+        path6 = make_8_step_path(path6, window_size)
+
     path_list = []
     path_list.append(path1)
     path_list.append(path2)
     path_list.append(path3)
     path_list.append(path4)
+    path_list.append(path5)
+    path_list.append(path6)
     path_all = plot_path_update(path_list)
 
     # --------------------------------------- start of plotting -----------------------------------------------
-    vis = 0
+    vis = 1
     if vis:
         for i in range(len(path_all[0])):
             plt.cla()
@@ -711,7 +1019,7 @@ def main():
             draw_shelves()
             for start, goal in zip(start_pts, goal_pts):
                 draw_endpoint(start, 'orange')
-                draw_endpoint(goal, 'black')
+                draw_endpoint(goal, 'grey')
 
             for path_n in path_all:
                 draw_bot(path_n[i][0], path_n[i][1], "robot.png")
@@ -724,7 +1032,12 @@ def main():
                 f'Robots deliver objects to loading dock, time = {i}')
             # plt.show(block=False)
             plt.pause(0.2)
+    # plt.pause(0.5)
+    # plt.show()
     x = 4
+    endtime = time.time()
+    print(
+        f"Total time for {len(start_pts)} robots, with window size = {window_size} = {endtime - starttime}")
     # eoc
 
 

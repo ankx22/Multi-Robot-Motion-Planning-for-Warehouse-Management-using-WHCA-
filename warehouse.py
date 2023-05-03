@@ -222,3 +222,13 @@ def show_loading_dock():
         oy.append(i)
         ox.append(40)
     plt.plot(ox, oy, 'sg')
+
+    # ox1 = [5, 40, 40, 5, 5]
+    # oy1 = [23, 23, 27, 27, 23]
+
+    # plt.plot(ox1, oy1, 'g')
+
+    # ox2 = [6, 39, 39, 6, 6]
+    # oy2 = [24, 24, 26, 26, 24]
+
+    # plt.plot(ox2, oy2, 'g')
