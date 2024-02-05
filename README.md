@@ -21,11 +21,11 @@ Intersection check animation:
 </p>
 Pick and place operation for 4 robots:
 <p float="middle">
-<img src="outputs/4robots.gif" width="750" height="350"/>
+<img src="outputs/4robots.gif" width="450" height="350"/>
 </p>
 Pick and place operation for 6 robots:
 <p float="middle">
-<img src="outputs/6robots.gif" width="750" height="350"/>
+<img src="outputs/6robots.gif" width="450" height="350"/>
 </p>
 
 Remaining plots are present in the [report](Report.pdf).
